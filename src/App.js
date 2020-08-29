@@ -1,26 +1,75 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-function App() {
+import { messagesSelector } from "./slices";
+import { deleteRoom, updateRoom, setRooms } from "./slices/rooms";
+import { updateUser, addUser, deleteUser, setUsers } from "./slices/users";
+import { setId, setNick, setRoomId } from "./slices/client";
+import { addMessage, prevMessages } from "./slices/messages";
+
+import { Response, Request, RequestType } from "./enums";
+import { ChatPage, UserPage, RoomPage } from "./pages";
+
+import socket from "./socket";
+
+const App = () => {
+  const dispatch = useDispatch();
+  const { messages, offset } = useSelector(messagesSelector);
+  const count = messages.length;
+
+  useEffect(() => {
+    socket.on(Response.SET_ROOM, (id) => {
+      dispatch(setRoomId(id));
+      dispatch(prevMessages(id, offset, count));
+    });
+
+    return () => {
+      socket.removeListener(Response.SET_ROOM);
+    };
+  }, [dispatch, offset, count]);
+
+  useEffect(() => {
+    socket.on(Response.GET_USERS, (userList) => dispatch(setUsers(userList)));
+    socket.on(Response.ADD_USER, (user) => dispatch(addUser(user)));
+    socket.on(Response.DELETE_USER, (id) => dispatch(deleteUser(id)));
+    socket.on(Response.UPDATE_USER, (user) => dispatch(updateUser(user)));
+
+    socket.on(Response.GET_ROOMS, (roomSet) => dispatch(setRooms(roomSet)));
+    socket.on(Response.UPDATE_ROOM, (room) => dispatch(updateRoom(room)));
+    socket.on(Response.DELETE_ROOM, (id) => dispatch(deleteRoom(id)));
+
+    socket.on(Response.SET_ID, (id) => dispatch(setId(id)));
+    socket.on(Response.SET_NICK, (nick) => dispatch(setNick(nick)));
+
+    socket.on(Response.MESSAGE, (data) => {
+      dispatch(addMessage(data));
+    });
+
+    socket.emit(RequestType.GET, Request.GET_USERS);
+    socket.emit(RequestType.GET, Request.GET_ROOMS);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="page-root">
+      <Router>
+        <Switch>
+          <Route exact path="/" component={ChatPage} />
+          <Route exact path="/users" component={UserPage} />
+          <Route exact path="/rooms" component={RoomPage} />
+          <Redirect to="/" />
+        </Switch>
+      </Router>
     </div>
   );
-}
+};
 
 export default App;

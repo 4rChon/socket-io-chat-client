@@ -1,0 +1,15 @@
+button {
+  border: none;
+  background: none;
+  color: #efab44;
+}
+
+button:hover {
+  cursor: pointer;
+  color: white;
+}
+
+button:disabled {
+  color: grey;
+  cursor: default;
+}

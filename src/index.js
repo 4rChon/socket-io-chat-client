@@ -1,17 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import { render } from "react-dom";
+import { configureStore } from "@reduxjs/toolkit";
+import { Provider } from "react-redux";
 
-ReactDOM.render(
-  <React.StrictMode>
+import App from "./App";
+import rootReducer from "./slices";
+import "./index.css";
+import "./components/Chat/chat.css";
+import "./components/Tabs/tabs.css";
+import "./components/Buttons/buttons.css";
+import "./pages/pages.css";
+
+const store = configureStore({ reducer: rootReducer });
+
+render(
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </Provider>,
+  document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
