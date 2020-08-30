@@ -2,14 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 import { routes } from "../API";
 import axios from "axios";
 
-const maxMessages = 40;
+const maxMessages = 100;
 const requestSize = 10;
 
 export const initialState = {
   messages: [],
   loading: true,
-  loadingTop: false,
-  loadingBot: false,
   hasErrors: false,
   newMessage: false,
   offset: 0,
@@ -36,14 +34,6 @@ const messagesSlice = createSlice({
     getMessages: (state) => {
       state.loading = true;
     },
-    getMessagesTop: (state) => {
-      state.loadingTop = true;
-      state.loading = true;
-    },
-    getMessagesBot: (state) => {
-      state.loadingBot = true;
-      state.loading = true;
-    },
     getMessagesSuccess: (state, { payload }) => {
       state.messages = payload;
       state.loading = false;
@@ -60,7 +50,6 @@ const messagesSlice = createSlice({
       ];
       state.offset = Math.max(state.offset - payload.length, 0);
       state.loading = false;
-      state.loadingBot = false;
       state.hasErrors = false;
       state.newMessage = false;
     },
@@ -80,12 +69,9 @@ const messagesSlice = createSlice({
       state.loading = false;
       state.hasErrors = false;
       state.newMessage = false;
-      state.loadingTop = false;
     },
     getMessagesFailure: (state) => {
       state.loading = false;
-      state.loadingTop = false;
-      state.loadingBot = false;
       state.hasErrors = true;
     },
     updateOffset: (state, { payload }) => {
@@ -98,8 +84,6 @@ export const {
   readMessage,
   addMessage,
   getMessages,
-  getMessagesTop,
-  getMessagesBot,
   getMessagesSuccess,
   getMessagesFailure,
   appendMessagesSuccess,
@@ -110,7 +94,7 @@ export default messagesSlice.reducer;
 
 export function prevMessages(roomId, offset, count) {
   return async (dispatch) => {
-    dispatch(getMessagesTop());
+    dispatch(getMessages());
     return axios
       .get(routes.GET_MESSAGES_PAGED(roomId, offset + count, requestSize))
       .then((response) => dispatch(prependMessagesSuccess(response.data)))
@@ -120,7 +104,7 @@ export function prevMessages(roomId, offset, count) {
 
 export function nextMessages(roomId, offset) {
   return async (dispatch) => {
-    dispatch(getMessagesBot());
+    dispatch(getMessages());
     return axios
       .get(
         routes.GET_MESSAGES_PAGED(
@@ -134,11 +118,11 @@ export function nextMessages(roomId, offset) {
   };
 }
 
-export function fetchMessages(roomId, amount) {
+export function fetchMessages(roomId, count = maxMessages) {
   return async (dispatch) => {
     dispatch(getMessages());
     return axios
-      .get(routes.GET_MESSAGES_PAGED(roomId, 0, amount))
+      .get(routes.GET_MESSAGES_PAGED(roomId, 0, count))
       .then((response) => dispatch(getMessagesSuccess(response.data)))
       .catch((error) => dispatch(getMessagesFailure()));
   };

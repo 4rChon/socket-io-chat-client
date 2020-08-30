@@ -21,17 +21,6 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    socket.on(Response.SET_ROOM, (id) => {
-      dispatch(setRoomId(id));
-      dispatch(fetchMessages(id, 30));
-    });
-
-    return () => {
-      socket.removeListener(Response.SET_ROOM);
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
     socket.on(Response.GET_USERS, (userList) => dispatch(setUsers(userList)));
     socket.on(Response.ADD_USER, (user) => dispatch(addUser(user)));
     socket.on(Response.DELETE_USER, (id) => dispatch(deleteUser(id)));
@@ -43,6 +32,10 @@ const App = () => {
 
     socket.on(Response.SET_ID, (id) => dispatch(setId(id)));
     socket.on(Response.SET_NICK, (nick) => dispatch(setNick(nick)));
+    socket.on(Response.SET_ROOM, (id) => {
+      dispatch(fetchMessages(id, 30));
+      dispatch(setRoomId(id));
+    });
 
     socket.on(Response.MESSAGE, (data) => {
       dispatch(addMessage(data));
@@ -55,6 +48,7 @@ const App = () => {
       socket.disconnect();
     };
   }, [dispatch]);
+
   return (
     <div className="page-root">
       <Router>

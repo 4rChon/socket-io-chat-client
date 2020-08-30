@@ -2,12 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export const Tab = (props) => {
-  const { icon, active, link } = props;
+  const { icon, active, link, loading } = props;
   return (
-    <ul className="tab-name">
+    <li className="tab-name">
       <Link className={`tab-link ${active ? "tab-active" : ""}`} to={link}>
-        <span className="material-icons tab-icon">{icon}</span>
+        <span className={loading ? "loader" : "material-icons tab-icon"}>
+          {!loading ? icon : ""}
+        </span>
       </Link>
-    </ul>
+    </li>
   );
 };

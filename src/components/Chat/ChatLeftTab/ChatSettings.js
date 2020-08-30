@@ -16,13 +16,15 @@ export const ChatSettings = () => {
         <ChatSettingsForm
           label="Nickname"
           request={Request.SET_NICK}
-          placeholder={client.nick}
+          placeholder={
+            client.nick.length > 0 ? client.nick : "You do not have a name"
+          }
         />
         <ChatSettingsForm
           label="Room"
           request={Request.JOIN_ROOM}
           placeholder={
-            client.roomId.length > 0 ? client.roomId : "You are not in a room."
+            client.roomId.length > 0 ? client.roomId : "You are not in a room"
           }
         />
       </ul>

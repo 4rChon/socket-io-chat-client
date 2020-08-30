@@ -26,14 +26,10 @@ export const Chat = () => {
   const [typists, setTypists] = useState([]);
   const [lock, setLock] = useState(false);
   const { id, roomId } = useSelector(clientSelector);
-  const {
-    offset,
-    loading,
-    loadingTop,
-    loadingBot,
-    messages,
-    newMessage,
-  } = useSelector(messagesSelector);
+  const { offset, loading, messages, newMessage } = useSelector(
+    messagesSelector
+  );
+
   const endRef = useRef(null);
   const chatRef = useRef(null);
 
@@ -156,16 +152,9 @@ export const Chat = () => {
   return (
     <div className="page-content">
       <ul ref={chatRef} className="chat-box">
-        <li
-          className={`loader ${
-            !(loading && !(loadingTop || loadingBot)) ? "hide" : ""
-          }`}
-        />
-        <li className={`loader ${!loadingTop ? "hide" : ""}`} />
         {messages.map((data, index) => (
           <ChatMessage key={index} nick={data.nick} message={data.message} />
         ))}
-        <li className={`loader ${!loadingBot ? "hide" : ""}`} />
         <div ref={endRef} />
       </ul>
       <ChatStatus
