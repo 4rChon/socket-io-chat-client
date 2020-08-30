@@ -42,7 +42,6 @@ const messagesSlice = createSlice({
       state.messages = payload;
       state.loading = false;
       state.hasErrors = false;
-      state.newMessage = true;
     },
     appendMessagesSuccess: (state, { payload }) => {
       const len = state.messages.length;
@@ -55,7 +54,6 @@ const messagesSlice = createSlice({
       state.offset = Math.max(state.offset - payload.length, 0);
       state.loading = false;
       state.hasErrors = false;
-      state.newMessage = false;
     },
     prependMessagesSuccess: (state, { payload }) => {
       const len = state.messages.length;
@@ -72,7 +70,6 @@ const messagesSlice = createSlice({
       }
       state.loading = false;
       state.hasErrors = false;
-      state.newMessage = false;
     },
     getMessagesFailure: (state) => {
       state.loading = false;
