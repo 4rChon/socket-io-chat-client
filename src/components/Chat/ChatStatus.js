@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 
 import { Response } from "../../enums";
 import { useSelector } from "react-redux";
-import { clientSelector, messagesSelector } from "../../slices";
+import { clientSelector } from "../../slices";
 
 import socket from "../../services/socket-service";
 
 export const ChatStatus = (props) => {
   const [typists, setTypists] = useState([]);
   const { id } = useSelector(clientSelector);
-  const { offset, newMessage } = useSelector(messagesSelector);
 
   useEffect(() => {
     socket.on(Response.TYPING, (typists) =>
@@ -30,13 +29,10 @@ export const ChatStatus = (props) => {
     else return `${typists.length} people are typing...`;
   };
 
-  const newMsgPred = () => newMessage && offset !== 0;
   const typingPred = () => typists.length !== 0;
   return (
     <ul className="chat-box-status-wrapper">
-      {newMsgPred() ? (
-        <li className={`chat-box-status`}>New Message</li>
-      ) : typingPred() ? (
+      {typingPred() ? (
         <li className={`chat-box-status`}>{getTypingBlurb()}</li>
       ) : (
         <li></li>

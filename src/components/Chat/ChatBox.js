@@ -56,8 +56,10 @@ export const ChatBox = () => {
         }
       }
     };
+    window.addEventListener("touchmove", handleScroll);
     window.addEventListener("scroll", handleScroll);
     return () => {
+      window.removeEventListener("touchmove", handleScroll);
       window.removeEventListener("scroll", handleScroll);
     };
   }, [dispatch, roomId, lock, offset, messages, chatRef]);
@@ -85,32 +87,6 @@ export const ChatBox = () => {
     window.addEventListener("wheel", handleWheel, true);
     return () => window.removeEventListener("wheel", handleWheel, true);
   }, [dispatch, roomId, lock, offset, messages, chatRef]);
-
-  useEffect(() => {
-    const handleSwipeUp = (event) => {
-      if (lock || !atTop(chatRef.current)) return;
-      setLock(true);
-      dispatch(prevMessages(roomId, offset, messages.length)).then(() =>
-        setLock(false)
-      );
-    };
-
-    const handleSwipeDown = (event) => {
-      if (lock || !atBottom(chatRef.current)) return;
-      setLock(true);
-      if (offset === 0) {
-        setLock(false);
-      } else {
-        dispatch(nextMessages(roomId, offset)).then(() => setLock(false));
-      }
-    };
-    window.addEventListener("swiped-down", handleSwipeDown);
-    window.addEventListener("swiped-up", handleSwipeUp);
-    return () => {
-      window.removeEventListener("swiped-down", handleSwipeDown);
-      window.removeEventListener("swiped-up", handleSwipeUp);
-    };
-  }, [dispatch, lock, chatRef, roomId, offset, messages]);
 
   // useEffect(() => {
   //   if (newMessage && offset === 0) {

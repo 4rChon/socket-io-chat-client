@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { GET_MessagesPaged, GET_MessagesCount } from "../services/rest-service";
 
 const maxMessages = 100;
-const requestSize = 10;
+const requestSize = 20;
 
 export const initialState = {
   messages: [],
@@ -38,6 +38,7 @@ const messagesSlice = createSlice({
       state.loading = true;
     },
     getMessagesSuccess: (state, { payload }) => {
+      state.offset = 0;
       state.messages = payload;
       state.loading = false;
       state.hasErrors = false;

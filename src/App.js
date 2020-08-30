@@ -33,7 +33,7 @@ const App = () => {
     socket.on(Response.SET_ID, (id) => dispatch(setId(id)));
     socket.on(Response.SET_NICK, (nick) => dispatch(setNick(nick)));
     socket.on(Response.SET_ROOM, (id) => {
-      dispatch(fetchMessages(id, 30));
+      dispatch(fetchMessages(id));
       dispatch(setRoomId(id));
     });
 

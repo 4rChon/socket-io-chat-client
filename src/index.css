@@ -28,6 +28,7 @@ body {
   background: #272727;
   color: #efab44;
   height: 100%;
+  overscroll-behavior: none;
 }
 
 code {
