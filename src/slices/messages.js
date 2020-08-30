@@ -35,8 +35,7 @@ const messagesSlice = createSlice({
       }
     },
     getMessages: (state) => {
-      state.loading =
-        state.maxRoomMessages !== state.offset + state.messages.length;
+      state.loading = true;
     },
     getMessagesSuccess: (state, { payload }) => {
       state.messages = payload;
@@ -96,6 +95,10 @@ export default messagesSlice.reducer;
 
 export function prevMessages(roomId, offset, count) {
   return async (dispatch) => {
+    const countResponse = await GET_MessagesCount(roomId);
+    if (countResponse.data.messageCount <= offset + count) {
+      return;
+    }
     await dispatch(getMessages());
     try {
       const response = await GET_MessagesPaged(
@@ -112,6 +115,11 @@ export function prevMessages(roomId, offset, count) {
 
 export function nextMessages(roomId, offset) {
   return async (dispatch) => {
+    if (offset === 0) {
+      return;
+    }
+    const countResponse = await GET_MessagesCount(roomId);
+    await dispatch(setMaxRoomMessages(countResponse.data));
     await dispatch(getMessages());
     try {
       const response = await GET_MessagesPaged(
