@@ -5,13 +5,12 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-import { messagesSelector } from "./slices";
 import { deleteRoom, updateRoom, setRooms } from "./slices/rooms";
 import { updateUser, addUser, deleteUser, setUsers } from "./slices/users";
 import { setId, setNick, setRoomId } from "./slices/client";
-import { addMessage, prevMessages } from "./slices/messages";
+import { addMessage, fetchMessages } from "./slices/messages";
 
 import { Response, Request, RequestType } from "./enums";
 import { ChatPage, UserPage, RoomPage } from "./pages";
@@ -20,19 +19,17 @@ import socket from "./socket";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { messages, offset } = useSelector(messagesSelector);
-  const count = messages.length;
 
   useEffect(() => {
     socket.on(Response.SET_ROOM, (id) => {
       dispatch(setRoomId(id));
-      dispatch(prevMessages(id, offset, count));
+      dispatch(fetchMessages(id, 30));
     });
 
     return () => {
       socket.removeListener(Response.SET_ROOM);
     };
-  }, [dispatch, offset, count]);
+  }, [dispatch]);
 
   useEffect(() => {
     socket.on(Response.GET_USERS, (userList) => dispatch(setUsers(userList)));

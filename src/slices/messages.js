@@ -134,11 +134,11 @@ export function nextMessages(roomId, offset) {
   };
 }
 
-export function fetchMessages(roomId) {
+export function fetchMessages(roomId, amount) {
   return async (dispatch) => {
     dispatch(getMessages());
     return axios
-      .get(routes.GET_MESSAGES(roomId))
+      .get(routes.GET_MESSAGES_PAGED(roomId, 0, amount))
       .then((response) => dispatch(getMessagesSuccess(response.data)))
       .catch((error) => dispatch(getMessagesFailure()));
   };
