@@ -100,49 +100,52 @@ export default messagesSlice.reducer;
 
 export function prevMessages(roomId, offset, count) {
   return async (dispatch) => {
-    dispatch(getMessages());
-    return axios
-      .get(routes.GET_MESSAGES_PAGED(roomId, offset + count, requestSize))
-      .then((response) => dispatch(prependMessagesSuccess(response.data)))
-      .catch((error) => dispatch(getMessagesFailure()));
+    await dispatch(getMessages());
+    try {
+      const response = await axios.get(
+        routes.GET_MESSAGES_PAGED(roomId, offset + count, requestSize)
+      );
+      return dispatch(prependMessagesSuccess(response.data));
+    } catch (err) {
+      return dispatch(getMessagesFailure());
+    }
   };
 }
 
 export function nextMessages(roomId, offset) {
   return async (dispatch) => {
-    dispatch(getMessages());
-    return axios
-      .get(
+    await dispatch(getMessages());
+    try {
+      const response = await axios.get(
         routes.GET_MESSAGES_PAGED(
           roomId,
           Math.max(offset - requestSize, 0),
           Math.min(requestSize, offset)
         )
-      )
-      .then((response) => dispatch(appendMessagesSuccess(response.data)))
-      .catch((error) => dispatch(getMessagesFailure()));
+      );
+      return dispatch(appendMessagesSuccess(response.data));
+    } catch (err) {
+      return dispatch(getMessagesFailure());
+    }
   };
 }
 
 export function fetchMessages(roomId, count = maxMessages) {
   return async (dispatch) => {
-    axios
-      .get(routes.GET_MESSAGES_COUNT(roomId))
-      .then(async (countResponse) => {
-        await dispatch(setMaxRoomMessages(countResponse.data));
-        await dispatch(getMessages());
-        try {
-          const response = await axios.get(
-            routes.GET_MESSAGES_PAGED(roomId, 0, count)
-          );
-          return dispatch(getMessagesSuccess(response.data));
-        } catch (error) {
-          return dispatch(getMessagesFailure());
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        dispatch(setMaxRoomMessages({ messageCount: 0 }));
-      });
+    try {
+      const countResponse = await axios.get(routes.GET_MESSAGES_COUNT(roomId));
+      await dispatch(setMaxRoomMessages(countResponse.data));
+      await dispatch(getMessages());
+      try {
+        const response = await axios.get(
+          routes.GET_MESSAGES_PAGED(roomId, 0, count)
+        );
+        return dispatch(getMessagesSuccess(response.data));
+      } catch (error) {
+        return dispatch(getMessagesFailure());
+      }
+    } catch (err) {
+      return dispatch(setMaxRoomMessages({ messageCount: 0 }));
+    }
   };
 }
