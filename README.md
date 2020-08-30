@@ -1,3 +1,5 @@
+[Click here for the server repository](https://github.com/4rChon/socket-io-chat-server)
+
 ## Available Scripts
 
 In the project directory, you can run:
