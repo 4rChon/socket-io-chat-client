@@ -7,7 +7,7 @@ import { readMessage, prevMessages, nextMessages } from "../../slices/messages";
 import { ChatMessage } from "../Chat";
 import { ChatStatus } from "./ChatStatus";
 
-import socket from "../../socket";
+import socket from "../../services/socket-service";
 import { Response } from "../../enums";
 
 const atBottom = (element, distance = 0) => {

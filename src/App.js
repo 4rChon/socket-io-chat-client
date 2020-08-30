@@ -15,7 +15,7 @@ import { addMessage, fetchMessages } from "./slices/messages";
 import { Response, Request, RequestType } from "./enums";
 import { ChatPage, UserPage, RoomPage } from "./pages";
 
-import socket from "./socket";
+import socket from "./services/socket-service";
 
 const App = () => {
   const dispatch = useDispatch();

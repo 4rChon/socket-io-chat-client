@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, ConfirmButton } from "../../Buttons/";
 import { RequestType } from "../../../enums";
-import socket from "../../../socket";
+import socket from "../../../services/socket-service";
 
 export const ChatSettingsForm = ({ label, request, placeholder }) => {
   const [isEditing, setIsEditing] = useState(false);

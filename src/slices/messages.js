@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { routes } from "../API";
-import axios from "axios";
+import { GET_MessagesPaged, GET_MessagesCount } from "../services/rest-service";
 
 const maxMessages = 100;
 const requestSize = 10;
@@ -102,8 +101,10 @@ export function prevMessages(roomId, offset, count) {
   return async (dispatch) => {
     await dispatch(getMessages());
     try {
-      const response = await axios.get(
-        routes.GET_MESSAGES_PAGED(roomId, offset + count, requestSize)
+      const response = await GET_MessagesPaged(
+        roomId,
+        offset + count,
+        requestSize
       );
       return dispatch(prependMessagesSuccess(response.data));
     } catch (err) {
@@ -116,12 +117,10 @@ export function nextMessages(roomId, offset) {
   return async (dispatch) => {
     await dispatch(getMessages());
     try {
-      const response = await axios.get(
-        routes.GET_MESSAGES_PAGED(
-          roomId,
-          Math.max(offset - requestSize, 0),
-          Math.min(requestSize, offset)
-        )
+      const response = await GET_MessagesPaged(
+        roomId,
+        Math.max(offset - requestSize, 0),
+        Math.min(requestSize, offset)
       );
       return dispatch(appendMessagesSuccess(response.data));
     } catch (err) {
@@ -133,13 +132,11 @@ export function nextMessages(roomId, offset) {
 export function fetchMessages(roomId, count = maxMessages) {
   return async (dispatch) => {
     try {
-      const countResponse = await axios.get(routes.GET_MESSAGES_COUNT(roomId));
+      const countResponse = await GET_MessagesCount(roomId);
       await dispatch(setMaxRoomMessages(countResponse.data));
       await dispatch(getMessages());
       try {
-        const response = await axios.get(
-          routes.GET_MESSAGES_PAGED(roomId, 0, count)
-        );
+        const response = await GET_MessagesPaged(roomId, 0, count);
         return dispatch(getMessagesSuccess(response.data));
       } catch (error) {
         return dispatch(getMessagesFailure());

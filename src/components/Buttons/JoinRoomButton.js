@@ -3,7 +3,7 @@ import React from "react";
 import { RequestType, Request } from "../../enums";
 import { useSelector } from "react-redux";
 import { clientSelector } from "../../slices";
-import socket from "../../socket";
+import socket from "../../services/socket-service";
 
 export const JoinRoomButton = ({ targetRoomId }) => {
   const { roomId } = useSelector(clientSelector);

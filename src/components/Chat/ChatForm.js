@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 import { clientSelector } from "../../slices";
 
-import socket from "../../socket";
+import socket from "../../services/socket-service";
 import { RequestType, Request } from "../../enums";
 
 export const ChatForm = () => {
