@@ -11,12 +11,16 @@ export const initialState = {
   hasErrors: false,
   newMessage: false,
   offset: 0,
+  maxRoomMessages: 0,
 };
 
 const messagesSlice = createSlice({
   name: "messages",
   initialState,
   reducers: {
+    setMaxRoomMessages: (state, { payload }) => {
+      state.maxRoomMessages = payload.messageCount;
+    },
     readMessage: (state) => {
       state.newMessage = false;
     },
@@ -32,7 +36,8 @@ const messagesSlice = createSlice({
       }
     },
     getMessages: (state) => {
-      state.loading = true;
+      state.loading =
+        state.maxRoomMessages !== state.offset + state.messages.length;
     },
     getMessagesSuccess: (state, { payload }) => {
       state.messages = payload;
@@ -86,6 +91,7 @@ export const {
   getMessages,
   getMessagesSuccess,
   getMessagesFailure,
+  setMaxRoomMessages,
   appendMessagesSuccess,
   prependMessagesSuccess,
 } = messagesSlice.actions;
@@ -120,10 +126,23 @@ export function nextMessages(roomId, offset) {
 
 export function fetchMessages(roomId, count = maxMessages) {
   return async (dispatch) => {
-    dispatch(getMessages());
-    return axios
-      .get(routes.GET_MESSAGES_PAGED(roomId, 0, count))
-      .then((response) => dispatch(getMessagesSuccess(response.data)))
-      .catch((error) => dispatch(getMessagesFailure()));
+    axios
+      .get(routes.GET_MESSAGES_COUNT(roomId))
+      .then(async (countResponse) => {
+        await dispatch(setMaxRoomMessages(countResponse.data));
+        await dispatch(getMessages());
+        try {
+          const response = await axios.get(
+            routes.GET_MESSAGES_PAGED(roomId, 0, count)
+          );
+          return dispatch(getMessagesSuccess(response.data));
+        } catch (error) {
+          return dispatch(getMessagesFailure());
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setMaxRoomMessages({ messageCount: 0 }));
+      });
   };
 }

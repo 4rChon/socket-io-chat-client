@@ -8,6 +8,7 @@ export const routes = {
   GET_MESSAGES: (roomId) => `${endpoint}/rooms/${roomId}/messages/`,
   GET_MESSAGES_PAGED: (roomId, offset, count) =>
     `${endpoint}/rooms/${roomId}/messages/${offset}/${count}`,
+  GET_MESSAGES_COUNT: (roomId) => `${endpoint}/rooms/${roomId}/messageCount`,
 };
 
 export const getRoom = (roomId) => {
